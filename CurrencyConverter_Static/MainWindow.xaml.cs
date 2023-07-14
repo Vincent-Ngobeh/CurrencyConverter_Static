@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,9 +48,17 @@ namespace CurrencyConverter_Static
             dtCurrency.Rows.Add("DEM", 43);
 
 
+
+            //The data to currency Combobox is assigned from datatable
             cmbFromCurrency.ItemsSource = dtCurrency.DefaultView;
+
+            //DisplayMemberPath Property is used to display data in Combobox
             cmbFromCurrency.DisplayMemberPath = "Text";
-            cmbFromCurrency.DisplayMemberPath = "Value";
+
+            //SelectedValuePath property is used to set the value in Combobox
+            cmbFromCurrency.SelectedValuePath = "Value";
+
+            //SelectedIndex property is used to bind hint in the Combobox. The default value is Select.
             cmbFromCurrency.SelectedIndex = 0;
 
             //All properties are set for 'To Currency' Combobox as 'From Currency' Combobox
@@ -95,18 +104,57 @@ namespace CurrencyConverter_Static
                 cmbToCurrency.Focus();
                 return;
             }
+
+            //If From and To Combobox selected values are same
+            if (cmbFromCurrency.Text == cmbToCurrency.Text)
+            {
+                //The amount textbox value set in ConvertedValue.
+                //double.parse is used to convert datatype String To Double.
+                //Textbox text have string and ConvertedValue is double datatype
+                ConvertedValue = double.Parse(txtCurrency.Text);
+
+                //Show in label converted currency and converted currency name.
+                // and ToString("N3") is used to place 000 after after the(.)
+                lblCurrency.Content = cmbToCurrency.Text + " " + ConvertedValue.ToString("N3");
+            }
+            else
+            {
+
+                //Calculation for currency converter is From Currency value multiply(*) 
+                // with amount textbox value and then the total is divided(/) with To Currency value
+                ConvertedValue = (double.Parse(cmbFromCurrency.SelectedValue.ToString()) * double.Parse(txtCurrency.Text)) / double.Parse(cmbToCurrency.SelectedValue.ToString());
+
+                //Show in label converted currency and converted currency name.
+                lblCurrency.Content = cmbToCurrency.Text + " " + ConvertedValue.ToString("N3");
+            }
+
+
+        }
+
+        private void ClearControls()
+        {
+            txtCurrency.Text = string.Empty;
+            if (cmbFromCurrency.Items.Count > 0)
+                cmbFromCurrency.SelectedIndex = 0;
+            if (cmbToCurrency.Items.Count > 0)
+                cmbToCurrency.SelectedIndex = 0;
+            lblCurrency.Content = "";
+            txtCurrency.Focus();
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            lblCurrency.Content = "";
+            ClearControls();
         }
 
       
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-
+            //Regular Expression is used to add regex.
+            // Add Library using System.Text.RegularExpressions;
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }
