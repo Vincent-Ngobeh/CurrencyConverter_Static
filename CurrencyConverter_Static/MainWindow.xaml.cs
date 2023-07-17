@@ -271,6 +271,58 @@ namespace CurrencyConverter_Static
             }
         }
 
+        public void GetData()
+        {
+
+            //Method is used for connect with database and open database connection
+            mycon();
+
+            //Create Datatable object
+            DataTable dt = new DataTable();
+
+            //Write SQL query to get the data from database table. Query written in double quotes and after comma provide connection.
+            cmd = new SqlCommand("SELECT * FROM Currency_Master", con);
+
+            //CommandType define which type of command will execute like Text, StoredProcedure, TableDirect.
+            cmd.CommandType = CommandType.Text;
+
+            //It is accept a parameter that contains the command text of the object's SelectCommand property.
+            da = new SqlDataAdapter(cmd);
+
+            //The DataAdapter serves as a bridge between a DataSet and a data source for retrieving and saving data. 
+            //The fill operation then adds the rows to destination DataTable objects in the DataSet
+            da.Fill(dt);
+
+            //dt is not null and rows count greater than 0
+            if (dt != null && dt.Rows.Count > 0)
+                //Assign DataTable data to dgvCurrency using item source property.
+                dgvCurrency.ItemsSource = dt.DefaultView;
+            else
+                dgvCurrency.ItemsSource = null;
+
+            //Database connection close
+            con.Close();
+        }
+
+        //Method is used to clear all the input which user entered in currency master tab
+        private void ClearMaster()
+        {
+            try
+            {
+                txtAmount.Text = string.Empty;
+                txtCurrencyName.Text = string.Empty;
+                btnSave.Content = "Save";
+                GetData();
+                CurrencyId = 0;
+                BindCurrency();
+                txtAmount.Focus();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
 
