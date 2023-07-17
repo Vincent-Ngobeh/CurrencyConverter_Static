@@ -124,9 +124,9 @@
     <Resource Include="Images\Logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Database\CurrencyConverter.mdf">
+    <AdditionalFiles Include="Database\CurrencyConverter.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </AdditionalFiles>
     <Content Include="Database\CurrencyConverter_log.ldf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>CurrencyConverter.mdf</DependentUpon>

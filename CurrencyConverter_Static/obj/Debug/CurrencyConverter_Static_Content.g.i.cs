@@ -8,7 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("database/currencyconverter.mdf")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("database/currencyconverter_log.ldf")]
 
 
