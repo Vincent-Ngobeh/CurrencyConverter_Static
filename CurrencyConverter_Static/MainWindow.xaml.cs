@@ -59,7 +59,7 @@ namespace CurrencyConverter_Static
         private void BindCurrency()
         {
             mycon();
-            //Create an 
+            
 
             //Create an object for DataTable
             DataTable dt = new DataTable();
@@ -87,23 +87,32 @@ namespace CurrencyConverter_Static
             //Insert a new row in dt with the data at a 0 position
             dt.Rows.InsertAt(newRow, 0);
 
+            //The dt is not null and rows count greater than 0
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                //Assign the datatable data to from currency combobox using ItemSource property.
+                cmbFromCurrency.ItemsSource = dt.DefaultView;
 
-            //The data to currency Combobox is assigned from datatable
-            cmbFromCurrency.ItemsSource = dtCurrency.DefaultView;
+                //Assign the datatable data to to currency combobox using ItemSource property.
+                cmbToCurrency.ItemsSource = dt.DefaultView;
+            }
+            con.Close();
+
+
+           
 
             //DisplayMemberPath Property is used to display data in Combobox
-            cmbFromCurrency.DisplayMemberPath = "Text";
+            cmbFromCurrency.DisplayMemberPath = "CurrencyName ";
 
             //SelectedValuePath property is used to set the value in Combobox
-            cmbFromCurrency.SelectedValuePath = "Value";
+            cmbFromCurrency.SelectedValuePath = "Id";
 
             //SelectedIndex property is used to bind hint in the Combobox. The default value is Select.
             cmbFromCurrency.SelectedIndex = 0;
 
             //All properties are set for 'To Currency' Combobox as 'From Currency' Combobox
-            cmbToCurrency.ItemsSource = dtCurrency.DefaultView;
             cmbToCurrency.DisplayMemberPath = "Text";
-            cmbToCurrency.SelectedValuePath = "Value";
+            cmbToCurrency.SelectedValuePath = "Id";
             cmbToCurrency.SelectedIndex = 0;
         }
 
@@ -198,7 +207,68 @@ namespace CurrencyConverter_Static
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (txtAmount.Text == null || txtAmount.Text.Trim() == "")
+                {
+                    MessageBox.Show("Please enter amount", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    txtAmount.Focus();
+                    return;
+                }
+                else if (txtCurrencyName.Text == null || txtCurrencyName.Text.Trim() == "")
+                {
+                    MessageBox.Show("Please enter currency name", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    txtCurrencyName.Focus();
+                    return;
+                }
+                else
+                {   //Edit time and set that record Id in CurrencyId variable.
+                    //Code to Update. If CurrencyId greater than zero than it is go for update.
+                    if (CurrencyId > 0)
+                    {
+                        //Show the confirmation message
+                        if (MessageBox.Show("Are you sure you want to update ?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            mycon();
+                            DataTable dt = new DataTable();
 
+                            //Update Query Record update using Id
+                            cmd = new SqlCommand("UPDATE Currency_Master SET Amount = @Amount, CurrencyName = @CurrencyName WHERE Id = @Id", con);
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@Id", CurrencyId);
+                            cmd.Parameters.AddWithValue("@Amount", txtAmount.Text);
+                            cmd.Parameters.AddWithValue("@CurrencyName", txtCurrencyName.Text);
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+
+                            MessageBox.Show("Data updated successfully", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                    }
+                    // Code to Save
+                    else
+                    {
+                        if (MessageBox.Show("Are you sure you want to save ?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            mycon();
+                            //Insert query to Save data in the table
+                            cmd = new SqlCommand("INSERT INTO Currency_Master(Amount, CurrencyName) VALUES(@Amount, @CurrencyName)", con);
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@Amount", txtAmount.Text);
+                            cmd.Parameters.AddWithValue("@CurrencyName", txtCurrencyName.Text);
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+
+                            MessageBox.Show("Data saved successfully", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                    }
+                    ClearMaster();
+                }
+            
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
