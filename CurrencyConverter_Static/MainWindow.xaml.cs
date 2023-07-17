@@ -14,8 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-
+using System.Data.SqlClient;
+using System.Configuration;
 
 namespace CurrencyConverter_Static
 {
@@ -24,6 +24,20 @@ namespace CurrencyConverter_Static
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        //Create an object for SqlConnection        
+        SqlConnection con = new SqlConnection();
+
+        //Create an object for SqlCommand
+        SqlCommand cmd = new SqlCommand();
+
+        //Create object for SqlDataAdapter
+        SqlDataAdapter da = new SqlDataAdapter();
+
+        private int CurrencyId = 0;
+        private double fromAmount = 0;
+        private double toAmount = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -31,22 +45,47 @@ namespace CurrencyConverter_Static
 
         }
 
+
+        public void mycon()
+        {
+            //Database connection string
+            String Conn = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString; //Database connection string
+            con = new SqlConnection(Conn);
+            con.Open(); //Connection Open
+        }
+
+
+
         private void BindCurrency()
         {
-            DataTable dtCurrency = new DataTable();
-            dtCurrency.Columns.Add("Text");
-            dtCurrency.Columns.Add("Value");
+            mycon();
+            //Create an 
 
+            //Create an object for DataTable
+            DataTable dt = new DataTable();
 
-            //Add rows in Datatable with text and value
-            dtCurrency.Rows.Add("--SELECT--", 0);
-            dtCurrency.Rows.Add("INR", 1);
-            dtCurrency.Rows.Add("USD", 75);
-            dtCurrency.Rows.Add("EUR", 85);
-            dtCurrency.Rows.Add("SAR", 20);
-            dtCurrency.Rows.Add("POUND", 5);
-            dtCurrency.Rows.Add("DEM", 43);
+            //Write query for get data from Currency_Master table
+            cmd = new SqlCommand("select Id, CurrencyName from Currency_Master", con);
 
+            //CommandType define which type of command we use for write a query
+            cmd.CommandType = CommandType.Text;
+
+            //It accepts a parameter that contains the command text of the object's selectCommand property.
+            da = new SqlDataAdapter(cmd);
+
+            da.Fill(dt);
+
+            //Create an object for DataRow
+            DataRow newRow = dt.NewRow();
+
+            //Assign a value to Id column
+            newRow["Id"] = 0;
+
+            //Assign value to CurrencyName column
+            newRow["CurrencyName"] = "--SELECT--";
+
+            //Insert a new row in dt with the data at a 0 position
+            dt.Rows.InsertAt(newRow, 0);
 
 
             //The data to currency Combobox is assigned from datatable
