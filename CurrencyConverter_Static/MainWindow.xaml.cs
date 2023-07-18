@@ -16,6 +16,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace CurrencyConverter_Static
 {
@@ -24,6 +26,32 @@ namespace CurrencyConverter_Static
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        public class Root
+        {
+            public Rate rates { get; set; }
+            public long timestamps;
+            public string license;
+        }
+
+        public class Rate
+        {
+            public double INR { get; set; }
+            public double JPY { get; set; }
+            public double USD { get; set; }
+            public double NZD { get; set; }
+            public double EUR { get; set; }
+            public double CAD { get; set; }
+            public double ISK { get; set; }
+            public double PHP { get; set; }
+            public double DKK { get; set; }
+            public double CZK { get; set; }
+        }
+
+
+
+
+
 
         //Create an object for SqlConnection        
         SqlConnection con = new SqlConnection();
@@ -47,6 +75,32 @@ namespace CurrencyConverter_Static
             GetData();
 
         }
+
+
+        public static async Task<Root> GetDataGetMethod<T>(string url)
+        {
+            var ss = new Root();
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = TimeSpan.FromMinutes(1);
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var ResponceString = await response.Content.ReadAsStringAsync();
+                        var ResponceObject = JsonConvert.DeserializeObject<Root>(ResponceString);
+                        return ResponceObject;
+                    }
+                    return ss;
+                }
+            }
+            catch
+            {
+                return ss;
+            }
+        }
+
 
 
         public void mycon()
