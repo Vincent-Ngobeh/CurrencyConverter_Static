@@ -41,7 +41,10 @@ namespace CurrencyConverter_Static
         public MainWindow()
         {
             InitializeComponent();
+            //ClearControls method to clear all controls value
+            ClearControls();
             BindCurrency();
+            GetData();
 
         }
 
@@ -325,12 +328,78 @@ namespace CurrencyConverter_Static
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                ClearMaster();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void dgvCurrency_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
+            try
+            {
+                //Create object for DataGrid
+                DataGrid grd = (DataGrid)sender;
 
+                //Create an object for DataRowView
+                DataRowView row_selected = grd.CurrentItem as DataRowView;
+
+                //If row_selected is not null
+                if (row_selected != null)
+                {
+                    //dgvCurrency items count greater than zero
+                    if (dgvCurrency.Items.Count > 0)
+                    {
+                        if (grd.SelectedCells.Count > 0)
+                        {
+                            //Get selected row id column value and set it to the CurrencyId variable
+                            CurrencyId = Int32.Parse(row_selected["Id"].ToString());
+
+                            //DisplayIndex is equal to zero in the Edited cell
+                            if (grd.SelectedCells[0].Column.DisplayIndex == 0)
+                            {
+                                //Get selected row amount column value and set to amount textbox
+                                txtAmount.Text = row_selected["Amount"].ToString();
+
+                                //Get selected row CurrencyName column value and set it to CurrencyName textbox
+                                txtCurrencyName.Text = row_selected["CurrencyName"].ToString();
+                                btnSave.Content = "Update";     //Change save button text Save to Update
+                            }
+
+                            //DisplayIndex is equal to one in the deleted cell
+                            if (grd.SelectedCells[0].Column.DisplayIndex == 1)
+                            {
+                                //Show confirmation dialog box
+                                if (MessageBox.Show("Are you sure you want to delete ?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                                {
+                                    mycon();
+                                    DataTable dt = new DataTable();
+
+                                    //Execute delete query to delete record from table using Id
+                                    cmd = new SqlCommand("DELETE FROM Currency_Master WHERE Id = @Id", con);
+                                    cmd.CommandType = CommandType.Text;
+
+                                    //CurrencyId set in @Id parameter and send it in delete statement
+                                    cmd.Parameters.AddWithValue("@Id", CurrencyId);
+                                    cmd.ExecuteNonQuery();
+                                    con.Close();
+
+                                    MessageBox.Show("Data deleted successfully", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    ClearMaster();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
