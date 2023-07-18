@@ -21,3 +21,5 @@ C:\Users\Vince\OneDrive\Desktop\Portfolio Projects\Tutorial Project\CurrencyConv
 C:\Users\Vince\OneDrive\Desktop\Portfolio Projects\Tutorial Project\CurrencyConverter_Static\CurrencyConverter_Static\bin\Debug\Database\CurrencyConverter.mdf
 C:\Users\Vince\OneDrive\Desktop\Portfolio Projects\Tutorial Project\CurrencyConverter_Static\CurrencyConverter_Static\bin\Debug\Database\CurrencyConverter_log.ldf
 C:\Users\Vince\OneDrive\Desktop\Portfolio Projects\Tutorial Project\CurrencyConverter_Static\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static_Content.g.cs
+C:\Users\Vince\OneDrive\Desktop\Portfolio Projects\Tutorial Project\CurrencyConverter_Static\CurrencyConverter_Static\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Vince\OneDrive\Desktop\Portfolio Projects\Tutorial Project\CurrencyConverter_Static\CurrencyConverter_Static\bin\Debug\Newtonsoft.Json.xml

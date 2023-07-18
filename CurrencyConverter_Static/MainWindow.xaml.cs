@@ -27,11 +27,14 @@ namespace CurrencyConverter_Static
     public partial class MainWindow : Window
     {
 
+        Root val = new Root();
+
+
         public class Root
         {
             public Rate rates { get; set; }
-            public long timestamps;
-            public string license;
+            //public long timestamps;
+            //public string license;
         }
 
         public class Rate
@@ -71,26 +74,46 @@ namespace CurrencyConverter_Static
             InitializeComponent();
             //ClearControls method to clear all controls value
             ClearControls();
-            BindCurrency();
-            GetData();
+            
+            //BindCurrency();
+            //GetData();
+            GetValue();
+            //BindCurrencyAPI();
 
         }
 
+
+
+        private async void GetValue()
+        {
+            val = await GetDataGetMethod<Root>("https://openexchangerates.org/api/latest.json?app_id=8716ea52618641f2817c636a18d8b87d");
+            BindCurrencyAPI();
+        }
 
         public static async Task<Root> GetDataGetMethod<T>(string url)
         {
             var ss = new Root();
             try
             {
+                //HttpClient class provides a base class for sending/receiving the HTTP requests/responses from a URL.
                 using (var client = new HttpClient())
                 {
+                    //The timespan to wait before the request times out.
                     client.Timeout = TimeSpan.FromMinutes(1);
+
+                    //HttpResponseMessage is a way of returning a message/data from your action.
                     HttpResponseMessage response = await client.GetAsync(url);
+
+                    //Check API response status code ok
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
+                        //Serialize the HTTP content to a string as an asynchronous operation.
                         var ResponceString = await response.Content.ReadAsStringAsync();
+
+
+                        //JsonConvert.DeserializeObject to deserialize Json to a C#
                         var ResponceObject = JsonConvert.DeserializeObject<Root>(ResponceString);
-                        return ResponceObject;
+                        return ResponceObject;  //Return API responce
                     }
                     return ss;
                 }
@@ -111,7 +134,49 @@ namespace CurrencyConverter_Static
             con.Open(); //Connection Open
         }
 
+        private void BindCurrencyAPI()
+        {
 
+            //Create an object Datatable
+            DataTable dt = new DataTable();
+
+            //Add display column in DataTable
+            dt.Columns.Add("Text");
+
+            //Add value column in DataTable
+            dt.Columns.Add("Rate");
+
+            //Add rows in Datatable with text and value. Set a value which fetch from API
+            dt.Rows.Add("--SELECT--", 0);
+            dt.Rows.Add("INR", val.rates.INR);
+            dt.Rows.Add("USD", val.rates.USD);
+            dt.Rows.Add("NZD", val.rates.NZD);
+            dt.Rows.Add("JPY", val.rates.JPY);
+            dt.Rows.Add("EUR", val.rates.EUR);
+            dt.Rows.Add("CAD", val.rates.CAD);
+            dt.Rows.Add("ISK", val.rates.ISK);
+            dt.Rows.Add("PHP", val.rates.PHP);
+            dt.Rows.Add("DKK", val.rates.DKK);
+            dt.Rows.Add("CZK", val.rates.CZK);
+
+            //Datatable data assign From currency Combobox
+            cmbFromCurrency.ItemsSource = dt.DefaultView;
+
+            //DisplayMemberPath property is used to display data in Combobox
+            cmbFromCurrency.DisplayMemberPath = "Text";
+
+            //SelectedValuePath property is used to set value in Combobox
+            cmbFromCurrency.SelectedValuePath = "Rate";
+
+            //SelectedIndex property is used for when bind Combobox it's default selected item is first
+            cmbFromCurrency.SelectedIndex = 0;
+
+            //All Property Set For To Currency Combobox As From Currency Combobox
+            cmbToCurrency.ItemsSource = dt.DefaultView;
+            cmbToCurrency.DisplayMemberPath = "Text";
+            cmbToCurrency.SelectedValuePath = "Rate";
+            cmbToCurrency.SelectedIndex = 0;
+        }
 
         private void BindCurrency()
         {
