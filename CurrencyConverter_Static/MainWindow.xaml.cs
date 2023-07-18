@@ -292,7 +292,8 @@ namespace CurrencyConverter_Static
 
                 //Calculation for currency converter is From Currency value multiply(*) 
                 // with amount textbox value and then the total is divided(/) with To Currency value
-                ConvertedValue = (double.Parse(cmbFromCurrency.SelectedValue.ToString()) * double.Parse(txtCurrency.Text)) / double.Parse(cmbToCurrency.SelectedValue.ToString());
+                ConvertedValue = (double.Parse(cmbToCurrency.SelectedValue.ToString()) * double.Parse(txtCurrency.Text)) / 
+                    double.Parse(cmbFromCurrency.SelectedValue.ToString());
 
                 //Show in label converted currency and converted currency name.
                 lblCurrency.Content = cmbToCurrency.Text + " " + ConvertedValue.ToString("N3");
